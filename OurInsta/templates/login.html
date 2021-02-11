@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+      <div class="sign-in">
+            <div class="container">
+                <div class="signin-content">
+                    <div class="signin-image">
+                        <figure><img src="static/compact-camera.png" alt="sing up image"></figure>
+                        <figure><img src="static/Capture.PNG" alt="sing up image"></figure>
+                    </div>
+
+                    <div class="signin-form">
+                        <figure><img src="static/Capture1.PNG" alt="sing up image"></figure>
+                        <form  method="POST" class="register-form" id="login-form">
+                            <div class="form-group">
+                                <label for="your_email"><i class="zmdi zmdi-email"></i></label>
+                                <input type="email" name="email" id="your_email" placeholder="Your Email" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="your_pass"><i class="zmdi zmdi-lock"></i></label>
+                                <input type="password" name="password" id="your_pass" placeholder="Password"/>
+                            </div>
+                            <div class="form-group form-button">
+                                <input type="submit" name="signin" id="signin" class="form-submit" value="Log in"/>
+                            </div>
+                            <hr>
+                                <div>
+                                    <a href="{{ url_for('register') }}" class="signup-image-link">Create an account</a>
+                                </div>
+                            <hr>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
