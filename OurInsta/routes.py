@@ -55,7 +55,7 @@ def register():
             add = False
             flash("user already exists , please login ", "danger")
             return redirect(url_for('login'))
-        if password != confirm_password:
+        if password != confirm_password :
             add = False
             flash("verify password", "danger")
             return render_template("register.html")
