@@ -85,6 +85,28 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route('/editProfile', methods=["GET","POST"])
+@login_required
+def editProfile():
+    if request.method == "POST":
+        current_user.name = request.form.get("name")
+        current_user.email = request.form.get("email")
+        current_user.phone_number = request.form.get("phone_number")
+        if hashlib.md5(str(request.form.get("current_password")).encode()).hexdigest() == current_user.secure_password:
+            if request.form.get("new_password") == request.form.get("confirm_new_password"):
+                current_user.secure_password = hashlib.md5(str(request.form.get("new_password")).encode()).hexdigest()
+                db.session.commit()
+                flash('Your account has been updated!', 'success')
+                return redirect(url_for('profile'))
+            else:
+                flash('rewrite the new password correctly!', 'danger')
+                return render_template("editProfile.html")
+        else:
+            flash('old password incorrect!', 'danger')
+            return render_template("editProfile.html")
+    else:
+        return render_template("editProfile.html")
+
 @app.route("/logout")
 @login_required
 def logout():
