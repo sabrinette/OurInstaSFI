@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+    <div class="container" id="post_details_container">
+        <div class="col-lg-12 post_comments">
+            <div class="card_comments mb-4">
+                <div class="card-body">
+                    <div class="media mb-3">
+                        <img src="{{ "/static/profile_images/" + post.author.profile_image }}" class="d-block ui-w-40 rounded-circle" alt="">
+                        <div class="media-body ml-3">
+                            {{ post.author.name }}
+                            <div class="text-muted small">{{ post.post_date.strftime('%d-%m-%Y') }}</div>
+                        </div>
+                        <div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="zmdi zmdi-more"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="{{ url_for('update_post', post_id=post.post_id) }}" >Update your post</a>
+                                    <a class="dropdown-item" href="{{ url_for('delete_post', post_id=post.post_id) }}" >delete your post</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                       {{ post.post_description }}
+                    </p>
+                    <a class="ui-bg-cover post_image" style="background-image: url('{{ "/static/post_images/" + post.post_image }}')"></a>
+                </div>
+
+                <div class="social_share">
+                    <button class="like btn btn-primary btn-icon btn-icon-mini btn-round
+                    {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 1 %}
+                    active
+                    {% endif %}" data-id="{{ post.post_id }}" data-type="like"><i class="zmdi zmdi-thumb-up"></i></button>
+                    <button class="unlike btn btn-primary btn-icon btn-icon-mini btn-round
+                    {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 0 %}
+                    active
+                    {% endif %}" data-id="{{ post.post_id }}" data-type="unlike"><i class="zmdi zmdi-thumb-down"></i></button>
+                    <button class="comment btn btn-primary btn-icon btn-icon-mini btn-round" onclick="location.href = '{{ url_for('post', post_id=post.post_id )}}';"><i class="zmdi zmdi-comment"></i></button>
+                </div>
+                <div class="card-footer">
+                    <a  class="d-inline-block text-muted">
+                        <strong class="nb_likes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 1).count() }}</strong> Likes</small>
+                    </a>
+                    <a class="d-inline-block text-muted ml-5">
+                        <strong class="nb_unlikes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 0).count() }}</strong> Dislikes</small>
+                    </a>
+                    <a class="d-inline-block text-muted ml-5">
+                        <strong>{{ post.post_comments.count() }}</strong> Comments</small>
+                    </a>
+                </div>
+            </div>
+            {% for comment in comments %}
+            <div class="col-md-12 comment_detail">
+                <div class="media g-mb-30 media-comment">
+                    <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="{{ "/static/profile_images/" + comment.author_comment.profile_image}}" alt="Image Description">
+                    <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+                        <div class="g-mb-15">
+                            {% if current_user == comment.author_comment %}
+                            <button class="delete_comment">
+                                <a href="{{ url_for('delete_comment', post_id=post.post_id, comment_id=comment.comment_id) }}">
+                                    <i class="zmdi zmdi-delete"></i>
+                                </a>
+                            </button>
+                            {% endif %}
+                            <h5 class="h5 g-color-gray-dark-v1 mb-0">{{comment.author_comment.name}}</h5>
+                            <span class="g-color-gray-dark-v4 g-font-size-12">5 days ago</span>
+                        </div>
+                        <p>{{ comment.content}}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div id="add_comment" class="col-md-12">
+                <div class="media g-mb-30 media-comment">
+                    <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="{{ "/static/profile_images/" + current_user.profile_image }}" alt="Image Description">
+                    <form method="POST" >
+                        <div class="row px-3 form-group">
+                            <textarea class="text-muted bg-light" placeholder="write your comment here" name="comment_content" required ></textarea>
+                            <input type="hidden" value="{{ post.post_id }}" name="post_id"/>
+                        </div>
+                        <div class="row px-3">
+                            <input type="submit" class="form-submit" value="add comment"  />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

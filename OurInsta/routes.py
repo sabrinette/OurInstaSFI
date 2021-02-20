@@ -1,8 +1,23 @@
 from flask import render_template, url_for, flash, redirect, request
 from OurInsta import app, db
-from OurInsta.models import Users
+from OurInsta.models import Users , Post
 from flask_login import login_user, current_user, logout_user, login_required
 import hashlib
+import os
+from werkzeug.utils import secure_filename
+import time
+
+
+app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
+
+def allowed_image(filename):
+    if not "." in filename:
+        return False
+    ext = filename.rsplit(".", 1)[1]
+    if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+        return True
+    else:
+        return False
 
 
 @app.route('/')
@@ -117,4 +132,39 @@ def logout():
     logout_user()
     flash("you are successfully logged out","success")
     return redirect(url_for('login'))
+
+@app.route('/addPost', methods=["GET", "POST"])
+@login_required
+def addPost():
+    if request.method == "POST":
+        post_description = request.form.get("post_description")
+        add = True
+        img_url = ""
+        if request.files:
+            image = request.files["post_picture"]
+            if image.filename != '':
+                if allowed_image(image.filename):
+                    filename = secure_filename(image.filename)
+                    filename = str(time.time()) + "_" + filename
+                    filename = filename.replace(".", "_", 1)
+                    image.save(os.path.join('static/post_images', filename))
+                    img_url = filename
+                else:
+                    add = False
+                    flash("only png , jpeg and jpg extensions are allowed", "danger")
+                    return render_template("addPost.html")
+        if add == True :
+            post = Post(post_description, img_url, current_user)
+            db.session.add(post)
+            db.session.commit()
+        return redirect(url_for('profile',id=current_user.user_id))
+    else:
+        return render_template("addPost.html")
+
+@app.route("/post/<int:post_id>")
+@login_required
+def post(post_id):
+    post = db.session.query(Post).filter(post_id == Post.post_id).first()
+    comments = post.post_comments
+    return render_template('post.html', post=post, comments=comments)
 

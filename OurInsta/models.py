@@ -16,6 +16,7 @@ class Users (db.Model, UserMixin):
     secure_password = db.Column(db.String(128))
     profile_image = db.Column(db.String(255), nullable=False)
     is_authenticated = db.Column(db.Boolean, default=False)
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __init__(self, name, phone_number, email, secure_password , profile_image):
         self.name = name
@@ -31,4 +32,18 @@ class Users (db.Model, UserMixin):
 
     def __repr__(self):
         return '<Users {}>'.format(self.name)
+
+class Post(db.Model):
+    post_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False )
+    post_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    post_description = db.Column(db.String(500), index=True)
+    post_image = db.Column(db.String(255), nullable=False)
+    post_reactions = db.relationship('Reaction', backref='post_reaction', lazy='dynamic')
+    post_comments = db.relationship('Comment', backref='post_comment', lazy='dynamic')
+
+    def __init__(self, post_description, post_image, author):
+        self.post_description = post_description
+        self.post_image = post_image
+        self.author = author
 

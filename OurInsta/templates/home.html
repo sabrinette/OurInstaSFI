@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+    <section class="profile">
+        <header class="header">
+            <div class="details">
+                <img src="{{ "/static/profile_images/" + current_user.profile_image }}" alt="John Doe" class="profile-pic-display">
+                <h1 class="heading">{{current_user.name}}</h1>
+                <div class="stats">
+                    <div class="col-6">
+                        <h4>{{ nb_followers }}</h4>
+                        <p class="text_stat">followers</p>
+                    </div>
+                    <div class="col-6">
+                        <h4>{{ current_user.followed.count() }}</h4>
+                        <p class="text_stat">followed</p>
+                    </div>
+                 </div>
+            </div>
+        </header>
+    </section>
+    <div class="container-fluid">
+        <div class="row" id="posts">
+        {% for post in posts.items %}
+            <div class="col-lg-4 post">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="media mb-3">
+                            <img src="{{ "/static/profile_images/" + post.author.profile_image }}" class="d-block ui-w-40 rounded-circle" alt="">
+                            <div class="media-body ml-3">
+                                <a href="{{ url_for('profile', user_id = post.author.user_id) }}">{{ post.author.name }}</a>
+                                <div class="text-muted small">{{ post.post_date.strftime('%d-%m-%Y') }}</div>
+                            </div>
+                        </div>
+                        <p>
+                           {{ post.post_description }}
+                        </p>
+                        <a class="ui-bg-cover post_display_image" style="background-image: url('{{ "/static/post_images/" + post.post_image }}')"></a>
+                    </div>
+
+                    <div class="social_share">
+                        <button class="like btn btn-primary btn-icon btn-icon-mini btn-round
+                        {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 1 %}
+                        active
+                        {% endif %}" data-id="{{ post.post_id }}" data-type="like"><i class="zmdi zmdi-thumb-up"></i></button>
+                        <button class="unlike btn btn-primary btn-icon btn-icon-mini btn-round
+                        {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 0 %}
+                        active
+                        {% endif %}" data-id="{{ post.post_id }}" data-type="unlike"><i class="zmdi zmdi-thumb-down"></i></button>
+                        <button class="comment btn btn-primary btn-icon btn-icon-mini btn-round" onclick="location.href = '{{ url_for('post', post_id=post.post_id )}}';"><i class="zmdi zmdi-comment"></i></button>
+                    </div>
+                    <div class="card-footer">
+                        <a class="d-inline-block text-muted">
+                            <strong class="nb_likes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 1).count() }}</strong> Likes</small>
+                        </a>
+                        <a class="d-inline-block text-muted ml-5">
+                            <strong class="nb_unlikes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 0).count() }}</strong> Dislikes</small>
+                        </a>
+                        <a class="d-inline-block text-muted ml-5" >
+                            <strong>{{ post.post_comments.count() }}</strong> Comments</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="pagination">
+        <div class="button_pagination">
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if posts.page == page_num %}
+                        <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
