@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{%  block body %}
+    <div class ="add_post">
+        <div class="container">
+            <div class="row">
+                <h3 class="title">Update your post</h3>
+                <div class= "col-md-10 card">
+                    <div class="row px-3"> <img class="profile-pic mr-3" src="{{ "/static/profile_images/" + current_user.profile_image }}">
+                        <div class="flex-column">
+                            <h3 class="mb-0 font-weight-normal">{{ current_user.name }}</h3>
+                        </div>
+                    </div>
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row px-3 form-group">
+                            <textarea class="text-muted bg-light mt-4 mb-3" placeholder="write something about your photo" name="post_description" required >{{ post.post_description }}</textarea>
+                        </div>
+                        <div>
+                            <h6>Choose another picture </h6>
+                            <input type="file" name="post_picture" required>
+                        </div>
+                        <div class="row px-3">
+                            <p class="zmdi zmdi-camera-monochrome-photos"></p>
+                            <input type="submit" class="form-submit" value="update post"  />
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

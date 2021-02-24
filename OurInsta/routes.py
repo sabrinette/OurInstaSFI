@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from OurInsta import app, db
 from OurInsta.models import Users , Post
 from flask_login import login_user, current_user, logout_user, login_required
@@ -168,3 +168,32 @@ def post(post_id):
     comments = post.post_comments
     return render_template('post.html', post=post, comments=comments)
 
+@app.route("/post/<int:post_id>/updatePost", methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = db.session.query(Post).filter(post_id == Post.post_id).first()
+    if post.author != current_user:
+        abort(403)
+    if request.method == "POST":
+        post.post_description = request.form.get("post_description")
+        image = request.files["post_picture"]
+        filename = secure_filename(image.filename)
+        image.save(os.path.join('static/post_images', filename))
+        post.post_image = image.filename
+        db.session.commit()
+        flash('Your post has been successfully updated!', 'success')
+        return redirect(url_for('profile',id=current_user.user_id))
+    else :
+        return render_template("updatePost.html", post=post)
+
+@app.route("/post/<int:post_id>/deletePost", methods=['GET'])
+@login_required
+def delete_post(post_id):
+    post = db.session.query(Post).filter(post_id == Post.post_id).first()
+    if post.author != current_user:
+        abort(403)
+    os.remove('static/post_images/'+post.post_image)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been successfully deleted!', 'success')
+    return redirect(url_for('home'))
