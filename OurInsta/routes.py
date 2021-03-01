@@ -197,3 +197,33 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been successfully deleted!', 'success')
     return redirect(url_for('home'))
+
+@app.route('/addReaction', methods=["POST"])
+@login_required
+def addReaction():
+    post_id = request.form.get("id_post")
+    user_id = current_user.user_id
+    reaction_type = request.form.get("reaction_type")
+    if reaction_type == "1":
+        reaction_type = 1
+    elif reaction_type == "0":
+        reaction_type = 0
+    reaction = db.session.query(Reaction).filter(Reaction.post_id == post_id).filter(Reaction.user_id == user_id).first()
+    if reaction is None:
+        deleted = 0
+        reaction = Reaction(user_id, post_id, reaction_type)
+    else:
+        if reaction_type == reaction.reaction_type:
+            deleted = 1
+        else:
+            deleted = 0
+        reaction.reaction_type = reaction_type
+    if deleted == 1:
+        db.session.delete(reaction)
+    else:
+        db.session.add(reaction)
+    db.session.commit()
+    nb_likes = db.session.query(Reaction).filter(Reaction.reaction_type == 1).filter(Reaction.post_id == post_id).count()
+    nb_unlikes = db.session.query(Reaction).filter(Reaction.reaction_type == 0).filter(Reaction.post_id == post_id).count()
+    data = {'deleted': deleted, 'nb_likes': nb_likes, 'nb_unlikes': nb_unlikes}
+    return jsonify(data)

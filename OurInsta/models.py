@@ -17,6 +17,8 @@ class Users (db.Model, UserMixin):
     profile_image = db.Column(db.String(255), nullable=False)
     is_authenticated = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    reactions = db.relationship('Reaction', backref='author_reaction', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author_comment', lazy='dynamic')
 
     def __init__(self, name, phone_number, email, secure_password , profile_image):
         self.name = name
@@ -46,4 +48,30 @@ class Post(db.Model):
         self.post_description = post_description
         self.post_image = post_image
         self.author = author
+
+class Reaction(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable=False)
+    reaction_type = db.Column(db.Boolean)
+    __table_args__ = (
+        PrimaryKeyConstraint('user_id', 'post_id'),
+        {},
+    )
+
+    def __init__(self, user_id, post_id , reaction_type):
+        self.user_id = user_id
+        self.post_id = post_id
+        self.reaction_type = reaction_type
+
+
+class Comment(db.Model):
+    comment_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.post_id'), nullable=False)
+    content = db.Column(db.String(500), index=True)
+
+    def __init__(self, user_id, post_id, content):
+        self.user_id = user_id
+        self.post_id = post_id
+        self.content = content
 

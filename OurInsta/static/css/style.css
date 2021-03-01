@@ -876,3 +876,8 @@ body {
  .options:hover {
      color: #000
  }
+
+ .like.active, .unlike.active {
+  background-color: #fff !important;
+  color: #007bff !important;
+}
