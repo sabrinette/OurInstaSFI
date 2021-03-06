@@ -1,6 +1,6 @@
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, abort, jsonify
 from OurInsta import app, db
-from OurInsta.models import Users , Post
+from OurInsta.models import Users , Post, Reaction, Comment
 from flask_login import login_user, current_user, logout_user, login_required
 import hashlib
 import os
@@ -227,3 +227,26 @@ def addReaction():
     nb_unlikes = db.session.query(Reaction).filter(Reaction.reaction_type == 0).filter(Reaction.post_id == post_id).count()
     data = {'deleted': deleted, 'nb_likes': nb_likes, 'nb_unlikes': nb_unlikes}
     return jsonify(data)
+
+@app.route("/addComment", methods=['POST'])
+@login_required
+def addComment():
+    data = {'user_name': current_user.name, 'user_profile_image': current_user.profile_image, 'comment': request.form.get("comment_content")}
+    user_id = current_user.user_id
+    post_id = request.form.get("id_post")
+    content = request.form.get("comment_content")
+    comment = Comment(user_id,post_id,content)
+    db.session.add(comment)
+    db.session.commit()
+    return jsonify(data)
+
+@app.route("/post/<int:post_id>/deleteComment/<int:comment_id>", methods=['GET'])
+@login_required
+def delete_comment(comment_id,post_id):
+    comment = db.session.query(Comment).filter(comment_id == Comment.comment_id).first()
+    if comment.author_comment != current_user:
+        abort(403)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Your comment has been successfully deleted!', 'success')
+    return redirect("/post/"+str(post_id))

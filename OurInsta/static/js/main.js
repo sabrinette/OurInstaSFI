@@ -53,3 +53,60 @@ $( ".like , .unlike" ).click(function() {
         }
   });
 });
+
+$( "#add_comment form" ).submit(function(event) {
+    event.preventDefault();
+    var data = {};
+    var form_data = $(this).serializeArray();
+    data['id_post'] = form_data[1].value;
+    data['comment_content'] = form_data[0].value;
+    $.ajax({
+        url: "/addComment",
+        type : "POST",
+        data: data ,
+        success: function (result){
+            var data = result;
+            var div1 = $('<div/>', {
+                'class':'col-md-12 comment_detail'
+            });
+            var div2 = $('<div/>', {
+                'class':'media g-mb-30 media-comment'
+            });
+            var img = $('<img/>', {
+                'class':'d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15',
+                'src' : "/static/profile_images/" + data['user_profile_image'],
+                'alt' : 'Image Description'
+            });
+            var div3 = $('<div/>', {
+                'class':'media-body u-shadow-v18 g-bg-secondary g-pa-30',
+            });
+            var div4 = $('<div/>', {
+                'class':'g-mb-15',
+            });
+            var h = $('<h5/>', {
+                'class':'h5 g-color-gray-dark-v1 mb-0',
+                'text' : data['user_name']
+            });
+            var span = $('<span/>', {
+                'class':'g-color-gray-dark-v4 g-font-size-12',
+                'text' : '5 days ago'
+            });
+            var p = $('<p/>', {
+                'class':'row px-4 form-group',
+                'text' : data['comment']
+            });
+            div4.append(h);
+            div4.append(span);
+            div3.append(div4);
+            div3.append(p);
+            div2.append(img);
+            div2.append(div3);
+            div1.append(div2);
+
+            $("#add_comment").before(div1);
+        },
+        error: function (){
+            alert("failed");
+        }
+  });
+});

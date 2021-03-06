@@ -881,3 +881,225 @@ body {
   background-color: #fff !important;
   color: #007bff !important;
 }
+
+
+@media (min-width: 0) {
+    .g-mr-15 {
+        margin-right: 1.07143rem !important;
+    }
+}
+@media (min-width: 0){
+    .g-mt-3 {
+        margin-top: 0.21429rem !important;
+    }
+}
+
+@media (min-width: 0){
+    .g-pa-30 {
+        padding: 2.14286rem !important;
+    }
+}
+
+.g-height-50 {
+    height: 50px;
+}
+
+.g-width-50 {
+    width: 50px !important;
+}
+
+.g-bg-secondary {
+    background-color: #fafafa !important;
+}
+
+.u-shadow-v18 {
+    box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 0.15);
+}
+
+.g-color-gray-dark-v4 {
+    color: #777 !important;
+}
+
+.g-font-size-12 {
+    font-size: 0.85714rem !important;
+}
+
+.media-comment {
+    margin-top:20px
+}
+
+#add_comment form {
+  width: 91.72%;
+}
+
+#add_comment input {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+#post_details_container{
+  padding-bottom: 40px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.delete_comment{
+  float: right;
+  color: gray;
+  background: unset;
+  border: unset;
+  font-size: 20px;
+}
+
+.add_post_name{
+  margin-top: 15px;
+}
+
+.personal-info{
+  margin-top: 40px;
+}
+
+.like.active, .unlike.active {
+  background-color: #fff !important;
+  color: #007bff !important;
+}
+
+.text_header{
+  color: darkgray;
+  text-align: center;
+}
+
+.statistic_card{
+  margin: 20px;
+  border-radius: 15px;
+}
+
+.content{
+  text-align: center;
+  opacity: .7;
+  font-family: "Segoe UI";
+}
+
+.colorBackground1{
+  background-image: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%) !important;
+}
+
+.colorBackground2{
+  background-image: radial-gradient(circle 248px at center, #16d9e3 0%, #30c7ec 47%, #46aef7 100%) !important;
+}
+
+.colorBackground3{
+  background-image: linear-gradient(to bottom, #00b09b, #96c93d) !important;
+}
+
+.colorBackground4{
+  background-image: linear-gradient(to bottom, palevioletred, hotpink) !important;
+}
+
+.widget_number{
+  font-weight: bold;
+  font-size: 1.8rem;
+  display: block;
+  margin-left: auto;
+  color : white !important;
+}
+
+.number_result{
+  color: white;
+  font-weight: bolder;
+  font-size: large;
+}
+
+.dashbord{
+  margin-top: 20px;
+  margin-bottom : 20px;
+}
+
+.dashbord_content{
+  margin-left: 44px;
+}
+
+.content{
+  margin-top: 11px;
+}
+
+.number_result{
+  margin-bottom: 11px;
+}
+
+.dashbord_tilte{
+  text-align: center;
+  margin-top: 20px;
+  font-family: Rockwell;
+  font-weight: bolder;
+  color: firebrick;
+}
+
+.pagination{
+  text-align: center;
+}
+
+.button_pagination{
+  margin : 0 auto;
+}
+
+/*-----------------------*/
+
+.people-nearby .google-maps{
+  background: #f8f8f8;
+  border-radius: 4px;
+  border: 1px solid #f1f2f2;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.people-nearby .google-maps .map{
+  height: 300px;
+  width: 100%;
+  border: none;
+}
+
+.people-nearby .nearby-user{
+  padding: 20px 0;
+  border-top: 1px solid #f1f2f2;
+  border-bottom: 1px solid #f1f2f2;
+  margin-bottom: 20px;
+}
+
+img.profile-photo-lg{
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+}
+
+.serach_image_search {
+  margin-top: 9px;
+}
+.search_element{
+  margin-top: 23px;
+  margin-bottom: 28px;
+}
+
+.stats {
+  display: flex;
+}
+
+.stats .col-6 {
+  width: 10rem;
+  text-align: center;
+}
+
+
+a{
+  color : black;
+  text-decoration: none;
+}
+
+.text_stat{
+  color: #BDBDBD;
+}
+
+.followed_button{
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
