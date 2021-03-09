@@ -250,3 +250,16 @@ def delete_comment(comment_id,post_id):
     db.session.commit()
     flash('Your comment has been successfully deleted!', 'success')
     return redirect("/post/"+str(post_id))
+
+@app.route('/results', methods=['GET', 'POST'])
+@login_required
+def search_results():
+    if request.method == "POST":
+        search_key = request.form.get("search_key")
+        results = db.session.query(Post).all()
+        if search_key != '':
+            search = "%{}%".format(search_key)
+            results = db.session.query(Post).filter(Post.post_description.like(search)).all()
+        return render_template('results.html', posts=results)
+    else:
+        return render_template("home.html")
