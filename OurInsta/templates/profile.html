@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+    <section class="profile">
+        <header class="header">
+            <div class="details">
+                <img src="{{ "/static/profile_images/" + user.profile_image }}" alt="John Doe" class="profile-pic-display">
+                <h1 class="heading" >{{user.name}}</h1>
+                 <div class="stats">
+                     <div class="col-6">
+                         <h4>{{ nb_followers }}</h4>
+                         <p class="text_stat">followers</p>
+                     </div>
+                     <div class="col-6">
+                         <h4>{{user.followed.count() }}</h4>
+                         <p class="text_stat">followed</p>
+                     </div>
+                 </div>
+                {% if user.user_id != current_user.user_id %}
+                    {% if not current_user.is_following(user) %}
+                        <div class="followed_button">
+                            <a href="{{ url_for('follow', user_id = user.user_id )}}">
+                                <button class="btn btn-primary pull-right">Follow</button>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="followed_button">
+                            <a href="{{ url_for('unfollow', user_id = user.user_id )}}">
+                                <button class="btn btn-primary pull-right">UnFollow</button>
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </header>
+    </section>
+    <div class="container-fluid">
+        <div class="row" id="posts">
+        {% for post in posts %}
+            <div class="col-lg-4 post">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="media mb-3">
+                            <img src="{{ "/static/profile_images/" + post.author.profile_image }}" class="d-block ui-w-40 rounded-circle" alt="">
+                            <div class="media-body ml-3">
+                                {{ post.author.name }}
+                                <div class="text-muted small">{{ post.post_date.strftime('%d-%m-%Y') }}</div>
+                            </div>
+                            <div>
+                                <div class="dropdown">
+                                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="zmdi zmdi-more"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="{{ url_for('update_post', post_id=post.post_id) }}" >Update your post</a>
+                                        <a class="dropdown-item" href="{{ url_for('delete_post', post_id=post.post_id) }}" >delete your post</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                           {{ post.post_description }}
+                        </p>
+                        <a class="ui-bg-cover post_display_image" style="background-image: url('{{ "/static/post_images/" + post.post_image }}')"></a>
+                    </div>
+
+                    <div class="social_share">
+                        <button class="like btn btn-primary btn-icon btn-icon-mini btn-round
+                        {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 1 %}
+                        active
+                        {% endif %}" data-id="{{ post.post_id }}" data-type="like"><i class="zmdi zmdi-thumb-up"></i></button>
+                        <button class="unlike btn btn-primary btn-icon btn-icon-mini btn-round
+                        {% if post.post_reactions.filter_by(user_id=current_user.user_id).first().reaction_type == 0 %}
+                        active
+                        {% endif %}" data-id="{{ post.post_id }}" data-type="unlike"><i class="zmdi zmdi-thumb-down"></i></button>
+                        <button class="comment btn btn-primary btn-icon btn-icon-mini btn-round" onclick="location.href = '{{ url_for('post', post_id=post.post_id )}}';"><i class="zmdi zmdi-comment"></i></button>
+                    </div>
+                    <div class="card-footer">
+                        <a  class="d-inline-block text-muted">
+                            <strong class="nb_likes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 1).count() }}</strong> Likes</small>
+                        </a>
+                        <a class="d-inline-block text-muted ml-5">
+                            <strong class="nb_unlikes" data-id="{{ post.post_id }}">{{ post.post_reactions.filter_by(reaction_type = 0).count() }}</strong> Dislikes</small>
+                        </a>
+                        <a class="d-inline-block text-muted ml-5" >
+                            <strong>{{ post.post_comments.count() }}</strong> Comments</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

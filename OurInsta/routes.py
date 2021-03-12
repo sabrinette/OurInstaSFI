@@ -263,3 +263,23 @@ def search_results():
         return render_template('results.html', posts=results)
     else:
         return render_template("home.html")
+
+@app.route('/userSearchResults', methods=['GET', 'POST'])
+@login_required
+def userSearchResults():
+    if request.method == "POST":
+        search_user_name = request.form.get("search_user_name")
+        results = db.session.query(Users).all()
+        if search_user_name != '':
+            search = "%{}%".format(search_user_name)
+            results = db.session.query(Users).filter(Users.name.like(search)).all()
+        return render_template('userSearchResults.html', users=results)
+    else:
+        return render_template("home.html")
+
+@app.route('/user/<int:user_id>')
+@login_required
+def profile(user_id):
+    user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    posts = user.posts
+    return render_template("profile.html", posts=posts, user=user)

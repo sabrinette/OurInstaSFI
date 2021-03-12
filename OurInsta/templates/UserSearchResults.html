@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+    <div class="container">
+        {% for user in users %}
+            <div class="nearby-user">
+                <div class="row">
+                    <div class="col-md-2 col-sm-2 serach_image_search">
+                        <img src="{{ "/static/profile_images/" + user.profile_image }}" alt="user" class="profile-photo-lg">
+                    </div>
+                    <div class="col-md-7 col-sm-7 search_element">
+                        <h5><a href="{{ url_for('profile', user_id = user.user_id) }}" class="profile-link">{{ user.name }}</a></h5>
+                    </div>
+                    {% if user.user_id != current_user.user_id %}
+                        {% if not current_user.is_following(user) %}
+                            <div class="followed_button">
+                                <a href="{{ url_for('follow', user_id = user.user_id )}}">
+                                    <button class="btn btn-primary pull-right">Follow</button>
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="followed_button">
+                                <a href="{{ url_for('unfollow', user_id = user.user_id )}}">
+                                    <button class="btn btn-primary pull-right">UnFollow</button>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+{% endblock %}
