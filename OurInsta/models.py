@@ -35,6 +35,25 @@ class Users (db.Model, UserMixin):
     def __repr__(self):
         return '<Users {}>'.format(self.name)
 
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            return self
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            return self
+
+    def is_following(self, user):
+        return self.followed.filter(followers.c.followed_id == user.user_id).count() > 0
+
+    def followed_posts(self):
+        followed_posts = db.session.query(Post).filter(
+            Post.user_id.in_([r.user_id for r in self.followed]))
+        return followed_posts.order_by(Post.post_date.desc())
+
 class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False )

@@ -22,7 +22,10 @@ def allowed_image(filename):
 
 @app.route('/')
 def home():
-    return render_template("base.html")
+    nb_followers = db.session.query(followers).filter(current_user.user_id == followers.c.followed_id).count()
+    page = request.args.get('page', 1, type=int)
+    followed_posts = current_user.followed_posts().paginate(page=page, per_page=3)
+    return render_template('home.html', posts=followed_posts, nb_followers=nb_followers)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -281,5 +284,44 @@ def userSearchResults():
 @login_required
 def profile(user_id):
     user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    nb_followers = db.session.query(followers).filter(user.user_id == followers.c.followed_id).count()
     posts = user.posts
-    return render_template("profile.html", posts=posts, user=user)
+    return render_template("profile.html", posts=posts, user=user, nb_followers=nb_followers)
+
+@app.route('/follow/user/<int:user_id>')
+@login_required
+def follow(user_id):
+    user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    if user is None:
+        flash('User is not found.', 'danger')
+        return redirect(url_for('home'))
+    if user == current_user:
+        flash('You can\'t follow yourself!', "danger")
+        return redirect(url_for(profile, user_id=user_id))
+    u = current_user.follow(user)
+    if u is None:
+        flash('Cannot follow ' + user.name + '.', "danger")
+        return redirect(url_for('profile', user_id=current_user.user_id))
+    db.session.add(u)
+    db.session.commit()
+    flash('You are now following ' + user.name + '!', "success")
+    return redirect(url_for('profile', user_id=user_id))
+
+@app.route('/unfollow/user/<int:user_id>')
+@login_required
+def unfollow(user_id):
+    user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    if user is None:
+        flash('User is not found.' ,'danger')
+        return redirect(url_for('home'))
+    if user == current_user:
+        flash('You can\'t unfollow yourself!')
+        return redirect(url_for('profile', user_id=user_id))
+    u = current_user.unfollow(user)
+    if u is None:
+        flash('Cannot unfollow ','danger')
+        return redirect(url_for('profile', user_id=user_id))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have stopped following ', 'success')
+    return redirect(url_for('profile', user_id=user_id))
