@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+    <div class="container-fluid container dashbord">
+        <h3 class="dashbord_tilte">OurInsta's dashbord</h3>
+        <figure><img src="static/statistic.png"></figure>
+        <div class="row dashbord_content">
+            <div class="col-lg-5 statistic_card colorBackground1" >
+                <div class="content">
+                    <h5> Total images shared in Our Insta</h5>
+                    <p class="number_result">{{ nb_posts }} images </p>
+                </div>
+            </div>
+            <div class="col-lg-5 statistic_card colorBackground2" >
+                <div class="content">
+                    <h5> Size of images shared in Our Insta</h5>
+                    <p class="number_result"> {{ Total_post_size }} bytes</p>
+                </div>
+            </div>
+            <div class="col-lg-5 statistic_card colorBackground3" >
+                <div class="content">
+                    <h5> You have shared </h5>
+                    <p class="number_result"> {{ nb_user_posts }} images</p>
+                </div>
+            </div>
+            <div class="col-lg-5 statistic_card colorBackground4" >
+                <div class="content">
+                    <h5> Size of images you have shared</h5>
+                    <p class="number_result"> {{ usr_post_size }} bytes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

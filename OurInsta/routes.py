@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, abort, jsonify
 from OurInsta import app, db
-from OurInsta.models import Users , Post, Reaction, Comment
+from OurInsta.models import Users, Post, Reaction, Comment , followers
 from flask_login import login_user, current_user, logout_user, login_required
 import hashlib
 import os
@@ -325,3 +325,19 @@ def unfollow(user_id):
     db.session.commit()
     flash('You have stopped following ', 'success')
     return redirect(url_for('profile', user_id=user_id))
+
+@app.route('/dashbord', methods=["GET","POST"])
+@login_required
+def dashbord():
+    posts = db.session.query(Post).all()
+    nb_posts = db.session.query(Post).count()
+    Total_post_size = 0
+    for post in posts:
+        stats = os.stat('static/post_images/' + post.post_image)
+        Total_post_size = Total_post_size + stats.st_size
+    nb_user_posts = current_user.posts.count()
+    usr_post_size = 0
+    for post in current_user.posts:
+        stats = os.stat('static/post_images/' + post.post_image)
+        usr_post_size = usr_post_size + stats.st_size
+        return render_template("dashbord.html", Total_post_size=Total_post_size, nb_posts=nb_posts, usr_post_size=usr_post_size,nb_user_posts=nb_user_posts)
