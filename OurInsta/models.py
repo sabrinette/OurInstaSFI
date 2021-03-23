@@ -8,6 +8,11 @@ def load_user(user_id):
     print(db.session.query(Users).filter(Users.email == user_id).first())
     return db.session.query(Users).filter(Users.email == user_id).first()
 
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('users.user_id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('users.user_id'))
+)
+
 class Users (db.Model, UserMixin):
     user_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)

@@ -65,6 +65,7 @@
             {% endfor %}
         </div>
     </div>
+
     <div class="pagination">
         <div class="button_pagination">
             {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
@@ -80,4 +81,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}

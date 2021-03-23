@@ -22,8 +22,8 @@ def allowed_image(filename):
 
 @app.route('/')
 def home():
-    nb_followers = db.session.query(followers).filter(current_user.user_id == followers.c.followed_id).count()
     page = request.args.get('page', 1, type=int)
+    nb_followers = db.session.query(followers).filter(current_user.user_id == followers.c.followed_id).count()
     followed_posts = current_user.followed_posts().paginate(page=page, per_page=3)
     return render_template('home.html', posts=followed_posts, nb_followers=nb_followers)
 
