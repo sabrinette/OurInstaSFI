@@ -7,7 +7,7 @@ OurInsta est un système d'information comparable au service Instagram
 ###### Ilyes Mohammed
 
 
-## Tech
+## Technologies utilisés
 Ce projet fonctionne avec:
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) - Backend
 - [Sqlalchemy](https://www.sqlalchemy.org/) - Backend
@@ -68,7 +68,7 @@ Ce projet fonctionne avec:
 	       - comment_id, post_id: sans une clé primaire, pour qu'un utilisateur peut faire plusieurs commentaire sur un post
 	       - l'attribut content: le contenu du commentaire.
 
-	  -  classe followers: ou se trouve id des abonnées et l'id des abonnements
+	 -  classe followers: ou se trouve id des abonnées et l'id des abonnements
 
 * routes.py: ou se trouve tous les routes des fonctionnalités de l'application:
 
