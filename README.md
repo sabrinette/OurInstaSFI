@@ -10,11 +10,13 @@ OurInsta est un système d'information comparable au service Instagram
 ## Tech
 Ce projet fonctionne avec:
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) - Backend
+- [Sqlalchemy](https://www.sqlalchemy.org/) - Backend
+- [XAMPP](https://www.apachefriends.org/fr/index.html) - Backend
 - [Html](https://fr.wikipedia.org/wiki/Hypertext_Markup_Language) - Frontend
-- [Css](https://fr.wikipedia.org/wiki/Feuilles_de_style_en_cascade) - Fronted
-- [JavaScript](https://developer.mozilla.org/fr/docs/Web/JavaScript) - Fronted
-- [Sqlalchemy](https://www.sqlalchemy.org/) - Database
-- [MySQL](https://www.mysql.com/fr/) - Database
+- [Css](https://fr.wikipedia.org/wiki/Feuilles_de_style_en_cascade) - Frontend
+- [Bootstrap](https://getbootstrap.com/) - Frontend
+- [Ajax/jQuery](https://api.jquery.com/jquery.ajax/) - Frontend
+
 
 ## Arbre du projet : 
 * static dans lequel on a six dossiers:
@@ -47,28 +49,26 @@ Ce projet fonctionne avec:
     	- les configurations de l'application,
 	- le lancement de l'application,
   	-  les configuration de l'application:
-
-	```sh
+	```bash
  	app = Flask(__name__)
  	app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb://root:@127.0.0.1:3306/ourinsta"
 	```
-	
-    - models.py: les classes utilisé pour sqlalchemy(ORM), il reflète la conception de la base de données, On a cinq classes/tables: Users, Post, Reaction,Comment, followers
-	    - classe Users:   on trouve les attributs décrivant les informations personnelle des utilisateurs(user-id, name,email...) et on les stoque dans la base de donnée. 
-		   	 -  l'attribut is-authenticated: nécessaire pour la gestion de session utilisateur et l'authentification(savoir si user est connecté ou non),
-			
-			
-	    - classe Post: contient les attributs nécessaire pour un tel post(post_id, user_id, post_description...)
-	    
-	    - classe Reaction: on trouve ses attributs: 
-	        - user_id, post_id: les deux clés étrangers construisent ensemble une clé primaire
-	        -  reaction_type: un boolean, soit 0 (unlike) ou 1(like).
-	        
-	   -  classe Comment: on trouve ses attributs: 
-	        - comment_id, post_id: sans une clé primaire, pour qu'un utilisateur peut faire plusieurs commentaire sur un post
-	        - l'attribut content: le contenu du commentaire.
+* models.py: les classes utilisé pour sqlalchemy(ORM), il reflète la conception de la base de données, On a cinq classes/tables: Users, Post, Reaction,Comment, followers:
 
-	   -  classe followers: ou se trouve id des abonnées et l'id des abonnements
+    -  classe Users:   on trouve les attributs décrivant les informations personnelle des utilisateurs(user-id, name,email...) et on les stoque dans la base de donnée. 
+        - l'attribut is-authenticated: nécessaire pour la gestion de session utilisateur et l'authentification(savoir si user est connecté ou non),
+    
+    - classe Post: contient les attributs nécessaire pour un tel post(post_id, user_id, post_description...)
+    
+    - classe Reaction: on trouve ses attributs: 
+	    - user_id, post_id: les deux clés étrangers construisent ensemble une clé primaire
+        -  reaction_type: un boolean, soit 0 (unlike) ou 1(like).
+	        
+	 -  classe Comment: on trouve ses attributs: 
+	       - comment_id, post_id: sans une clé primaire, pour qu'un utilisateur peut faire plusieurs commentaire sur un post
+	       - l'attribut content: le contenu du commentaire.
+
+	  -  classe followers: ou se trouve id des abonnées et l'id des abonnements
 
 * routes.py: ou se trouve tous les routes des fonctionnalités de l'application:
 
@@ -90,6 +90,6 @@ Ce projet fonctionne avec:
     - route vers deleteComment: Supression du commentaire possédant comment_id et post_id actuelle, 
     - route vers results: faire des recherches des images en fonction des mots clé dans la description.
 
-* run.py:Lancement de l'application.
+* run.py: Lancement de l'application.
 
 
