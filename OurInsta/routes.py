@@ -88,6 +88,19 @@ def profile(user_id):
 @login_required
 def editProfile():
     if request.method == "POST":
+        img_url = current_user.profile_image
+        if request.files:
+            image = request.files["profile_picture"]
+            if image.filename != '':
+                if allowed_image(image.filename):
+                    filename = secure_filename(image.filename)
+                    filename = str(time.time()) + "_" + filename
+                    filename = filename.replace(".", "_", 1)
+                    image.save(os.path.join('OurInsta/static/profile_images', filename))
+                    img_url = filename
+                else:
+                    flash("only png , jpeg and jpg extensions are allowed", "danger")
+        current_user.profile_image = img_url
         current_user.name = request.form.get("name")
         current_user.email = request.form.get("email")
         current_user.phone_number = request.form.get("phone_number")
@@ -164,7 +177,7 @@ def register():
                     filename = secure_filename(image.filename)
                     filename = str(time.time())+"_"+filename
                     filename = filename.replace(".", "_", 1)
-                    image.save(os.path.join('static/profile_images', filename))
+                    image.save(os.path.join('OurInsta/static/profile_images', filename))
                     img_url = filename
                 else:
                     add = False
@@ -207,7 +220,7 @@ def addPost():
                     filename = secure_filename(image.filename)
                     filename = str(time.time()) + "_" + filename
                     filename = filename.replace(".", "_", 1)
-                    image.save(os.path.join('static/post_images', filename))
+                    image.save(os.path.join('OurInsta/static/post_images', filename))
                     img_url = filename
                 else:
                     add = False
@@ -238,7 +251,7 @@ def update_post(post_id):
         post.post_description = request.form.get("post_description")
         image = request.files["post_picture"]
         filename = secure_filename(image.filename)
-        image.save(os.path.join('static/post_images', filename))
+        image.save(os.path.join('OurInsta/static/post_images', filename))
         post.post_image = image.filename
         db.session.commit()
         flash('Your post has been successfully updated!', 'success')
@@ -252,7 +265,7 @@ def delete_post(post_id):
     post = db.session.query(Post).filter(post_id == Post.post_id).first()
     if post.author != current_user:
         abort(403)
-    os.remove('static/post_images/'+post.post_image)
+    os.remove('OurInsta/static/post_images/'+post.post_image)
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been successfully deleted!', 'success')
