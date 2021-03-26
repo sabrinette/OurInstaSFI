@@ -5,7 +5,6 @@ from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
-    print(db.session.query(Users).filter(Users.email == user_id).first())
     return db.session.query(Users).filter(Users.email == user_id).first()
 
 followers = db.Table('followers',
@@ -21,9 +20,15 @@ class Users (db.Model, UserMixin):
     secure_password = db.Column(db.String(128))
     profile_image = db.Column(db.String(255), nullable=False)
     is_authenticated = db.Column(db.Boolean, default=False)
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    posts = db.relationship('Post', backref='author', lazy= 'dynamic')
     reactions = db.relationship('Reaction', backref='author_reaction', lazy='dynamic')
     comments = db.relationship('Comment', backref='author_comment', lazy='dynamic')
+    followed = db.relationship('Users',
+                               secondary=followers,
+                               primaryjoin=(followers.c.follower_id == user_id),
+                               secondaryjoin=(followers.c.followed_id == user_id),
+                               backref=db.backref('followers', lazy='dynamic'),
+                               lazy='dynamic')
 
     def __init__(self, name, phone_number, email, secure_password , profile_image):
         self.name = name
@@ -39,7 +44,6 @@ class Users (db.Model, UserMixin):
 
     def __repr__(self):
         return '<Users {}>'.format(self.name)
-
 
     def follow(self, user):
         if not self.is_following(user):
@@ -58,6 +62,7 @@ class Users (db.Model, UserMixin):
         followed_posts = db.session.query(Post).filter(
             Post.user_id.in_([r.user_id for r in self.followed]))
         return followed_posts.order_by(Post.post_date.desc())
+
 
 class Post(db.Model):
     post_id = db.Column(db.Integer, primary_key=True)
@@ -98,4 +103,5 @@ class Comment(db.Model):
         self.user_id = user_id
         self.post_id = post_id
         self.content = content
+
 

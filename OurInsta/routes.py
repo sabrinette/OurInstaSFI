@@ -7,7 +7,6 @@ import os
 from werkzeug.utils import secure_filename
 import time
 
-
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
 
 def allowed_image(filename):
@@ -19,13 +18,93 @@ def allowed_image(filename):
     else:
         return False
 
-
 @app.route('/')
+def hello():
+    return render_template("base.html")
+
+@app.route('/addReaction', methods=["POST"])
+@login_required
+def addReaction():
+    post_id = request.form.get("id_post")
+    user_id = current_user.user_id
+    reaction_type = request.form.get("reaction_type")
+    if reaction_type == "1":
+        reaction_type = 1
+    elif reaction_type == "0":
+        reaction_type = 0
+    reaction = db.session.query(Reaction).filter(Reaction.post_id == post_id).filter(Reaction.user_id == user_id).first()
+    if reaction is None:
+        deleted = 0
+        reaction = Reaction(user_id, post_id, reaction_type)
+    else:
+        if reaction_type == reaction.reaction_type:
+            deleted = 1
+        else:
+            deleted = 0
+        reaction.reaction_type = reaction_type
+    if deleted == 1:
+        db.session.delete(reaction)
+    else:
+        db.session.add(reaction)
+    db.session.commit()
+    nb_likes = db.session.query(Reaction).filter(Reaction.reaction_type == 1).filter(Reaction.post_id == post_id).count()
+    nb_unlikes = db.session.query(Reaction).filter(Reaction.reaction_type == 0).filter(Reaction.post_id == post_id).count()
+    data = {'deleted': deleted, 'nb_likes': nb_likes, 'nb_unlikes': nb_unlikes}
+    return jsonify(data)
+
+@app.route('/dashbord', methods=["GET","POST"])
+@login_required
+def dashbord():
+    posts = db.session.query(Post).all()
+    nb_posts = db.session.query(Post).count()
+    Total_post_size = 0
+    for post in posts:
+        stats = os.stat('static/post_images/' + post.post_image)
+        Total_post_size = Total_post_size + stats.st_size
+    nb_user_posts = current_user.posts.count()
+    usr_post_size = 0
+    for post in current_user.posts:
+        stats = os.stat('static/post_images/' + post.post_image)
+        usr_post_size = usr_post_size + stats.st_size
+        return render_template("dashbord.html", Total_post_size=Total_post_size, nb_posts=nb_posts, usr_post_size=usr_post_size,nb_user_posts=nb_user_posts)
+
+@app.route('/home')
+@login_required
 def home():
-    page = request.args.get('page', 1, type=int)
     nb_followers = db.session.query(followers).filter(current_user.user_id == followers.c.followed_id).count()
+    page = request.args.get('page', 1, type=int)
     followed_posts = current_user.followed_posts().paginate(page=page, per_page=3)
-    return render_template('home.html', posts=followed_posts, nb_followers=nb_followers)
+    return render_template('home.html', posts= followed_posts , nb_followers=nb_followers)
+
+@app.route('/user/<int:user_id>')
+@login_required
+def profile(user_id):
+    user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    nb_followers = db.session.query(followers).filter(user.user_id == followers.c.followed_id).count()
+    posts = user.posts
+    return render_template("profile.html", posts=posts, user=user, nb_followers=nb_followers)
+
+@app.route('/editProfile', methods=["GET","POST"])
+@login_required
+def editProfile():
+    if request.method == "POST":
+        current_user.name = request.form.get("name")
+        current_user.email = request.form.get("email")
+        current_user.phone_number = request.form.get("phone_number")
+        if hashlib.md5(str(request.form.get("current_password")).encode()).hexdigest() == current_user.secure_password:
+            if request.form.get("new_password") == request.form.get("confirm_new_password"):
+                current_user.secure_password = hashlib.md5(str(request.form.get("new_password")).encode()).hexdigest()
+                db.session.commit()
+                flash('Your account has been updated!', 'success')
+                return redirect(url_for('profile', user_id=current_user.user_id))
+            else:
+                flash('rewrite the new password correctly!', 'danger')
+                return render_template("editProfile.html")
+        else:
+            flash('old password incorrect!', 'danger')
+            return render_template("editProfile.html")
+    else:
+        return render_template("editProfile.html")
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -103,28 +182,6 @@ def register():
     else:
         return render_template("register.html")
 
-@app.route('/editProfile', methods=["GET","POST"])
-@login_required
-def editProfile():
-    if request.method == "POST":
-        current_user.name = request.form.get("name")
-        current_user.email = request.form.get("email")
-        current_user.phone_number = request.form.get("phone_number")
-        if hashlib.md5(str(request.form.get("current_password")).encode()).hexdigest() == current_user.secure_password:
-            if request.form.get("new_password") == request.form.get("confirm_new_password"):
-                current_user.secure_password = hashlib.md5(str(request.form.get("new_password")).encode()).hexdigest()
-                db.session.commit()
-                flash('Your account has been updated!', 'success')
-                return redirect(url_for('profile'))
-            else:
-                flash('rewrite the new password correctly!', 'danger')
-                return render_template("editProfile.html")
-        else:
-            flash('old password incorrect!', 'danger')
-            return render_template("editProfile.html")
-    else:
-        return render_template("editProfile.html")
-
 @app.route("/logout")
 @login_required
 def logout():
@@ -160,7 +217,7 @@ def addPost():
             post = Post(post_description, img_url, current_user)
             db.session.add(post)
             db.session.commit()
-        return redirect(url_for('profile',id=current_user.user_id))
+        return redirect(url_for('profile',user_id=current_user.user_id))
     else:
         return render_template("addPost.html")
 
@@ -185,7 +242,7 @@ def update_post(post_id):
         post.post_image = image.filename
         db.session.commit()
         flash('Your post has been successfully updated!', 'success')
-        return redirect(url_for('profile',id=current_user.user_id))
+        return redirect(url_for('profile',user_id=current_user.user_id))
     else :
         return render_template("updatePost.html", post=post)
 
@@ -200,36 +257,6 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been successfully deleted!', 'success')
     return redirect(url_for('home'))
-
-@app.route('/addReaction', methods=["POST"])
-@login_required
-def addReaction():
-    post_id = request.form.get("id_post")
-    user_id = current_user.user_id
-    reaction_type = request.form.get("reaction_type")
-    if reaction_type == "1":
-        reaction_type = 1
-    elif reaction_type == "0":
-        reaction_type = 0
-    reaction = db.session.query(Reaction).filter(Reaction.post_id == post_id).filter(Reaction.user_id == user_id).first()
-    if reaction is None:
-        deleted = 0
-        reaction = Reaction(user_id, post_id, reaction_type)
-    else:
-        if reaction_type == reaction.reaction_type:
-            deleted = 1
-        else:
-            deleted = 0
-        reaction.reaction_type = reaction_type
-    if deleted == 1:
-        db.session.delete(reaction)
-    else:
-        db.session.add(reaction)
-    db.session.commit()
-    nb_likes = db.session.query(Reaction).filter(Reaction.reaction_type == 1).filter(Reaction.post_id == post_id).count()
-    nb_unlikes = db.session.query(Reaction).filter(Reaction.reaction_type == 0).filter(Reaction.post_id == post_id).count()
-    data = {'deleted': deleted, 'nb_likes': nb_likes, 'nb_unlikes': nb_unlikes}
-    return jsonify(data)
 
 @app.route("/addComment", methods=['POST'])
 @login_required
@@ -266,27 +293,6 @@ def search_results():
         return render_template('results.html', posts=results)
     else:
         return render_template("home.html")
-
-@app.route('/userSearchResults', methods=['GET', 'POST'])
-@login_required
-def userSearchResults():
-    if request.method == "POST":
-        search_user_name = request.form.get("search_user_name")
-        results = db.session.query(Users).all()
-        if search_user_name != '':
-            search = "%{}%".format(search_user_name)
-            results = db.session.query(Users).filter(Users.name.like(search)).all()
-        return render_template('userSearchResults.html', users=results)
-    else:
-        return render_template("home.html")
-
-@app.route('/user/<int:user_id>')
-@login_required
-def profile(user_id):
-    user = db.session.query(Users).filter(Users.user_id == user_id).first()
-    nb_followers = db.session.query(followers).filter(user.user_id == followers.c.followed_id).count()
-    posts = user.posts
-    return render_template("profile.html", posts=posts, user=user, nb_followers=nb_followers)
 
 @app.route('/follow/user/<int:user_id>')
 @login_required
@@ -326,18 +332,15 @@ def unfollow(user_id):
     flash('You have stopped following ', 'success')
     return redirect(url_for('profile', user_id=user_id))
 
-@app.route('/dashbord', methods=["GET","POST"])
+@app.route('/userSearchResults', methods=['GET', 'POST'])
 @login_required
-def dashbord():
-    posts = db.session.query(Post).all()
-    nb_posts = db.session.query(Post).count()
-    Total_post_size = 0
-    for post in posts:
-        stats = os.stat('static/post_images/' + post.post_image)
-        Total_post_size = Total_post_size + stats.st_size
-    nb_user_posts = current_user.posts.count()
-    usr_post_size = 0
-    for post in current_user.posts:
-        stats = os.stat('static/post_images/' + post.post_image)
-        usr_post_size = usr_post_size + stats.st_size
-        return render_template("dashbord.html", Total_post_size=Total_post_size, nb_posts=nb_posts, usr_post_size=usr_post_size,nb_user_posts=nb_user_posts)
+def userSearchResults():
+    if request.method == "POST":
+        search_user_name = request.form.get("search_user_name")
+        results = db.session.query(Users).all()
+        if search_user_name != '':
+            search = "%{}%".format(search_user_name)
+            results = db.session.query(Users).filter(Users.name.like(search)).all()
+        return render_template('userSearchResults.html', users=results)
+    else:
+        return render_template("home.html")

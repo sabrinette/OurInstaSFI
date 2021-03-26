@@ -611,54 +611,7 @@ div {
   display: block;
 }
 
-.picture-container{
-    position: relative;
-    cursor: pointer;
-    text-align: center;
-}
-.picture{
-    width: 106px;
-    height: 106px;
-    background-color: #999999;
-    border: 4px solid #CCCCCC;
-    color: #FFFFFF;
-    border-radius: 50%;
-    margin: 0px auto;
-    overflow: hidden;
-    transition: all 0.2s;
-    -webkit-transition: all 0.2s;
-}
-.picture:hover{
-    border-color: #2ca8ff;
-}
-.content.ct-wizard-green .picture:hover{
-    border-color: #05ae0e;
-}
-.content.ct-wizard-blue .picture:hover{
-    border-color: #3472f7;
-}
-.content.ct-wizard-orange .picture:hover{
-    border-color: #ff9500;
-}
-.content.ct-wizard-red .picture:hover{
-    border-color: #ff3b30;
-}
-.picture input[type="file"] {
-    cursor: pointer;
-    display: block;
-    height: 100%;
-    left: 0;
-    opacity: 0 !important;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-.picture-src{
-    width: 100%;
-
-}
-
+/*----------------------------------------------------- */
 
 body {
     background:#eee;
@@ -877,10 +830,121 @@ body {
      color: #000
  }
 
- .like.active, .unlike.active {
-  background-color: #fff !important;
-  color: #007bff !important;
+ /*Profile Pic Start*/
+.picture-container{
+    position: relative;
+    cursor: pointer;
+    text-align: center;
 }
+.picture{
+    width: 106px;
+    height: 106px;
+    background-color: #999999;
+    border: 4px solid #CCCCCC;
+    color: #FFFFFF;
+    border-radius: 50%;
+    margin: 0px auto;
+    overflow: hidden;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+}
+.picture:hover{
+    border-color: #2ca8ff;
+}
+.content.ct-wizard-green .picture:hover{
+    border-color: #05ae0e;
+}
+.content.ct-wizard-blue .picture:hover{
+    border-color: #3472f7;
+}
+.content.ct-wizard-orange .picture:hover{
+    border-color: #ff9500;
+}
+.content.ct-wizard-red .picture:hover{
+    border-color: #ff3b30;
+}
+.picture input[type="file"] {
+    cursor: pointer;
+    display: block;
+    height: 100%;
+    left: 0;
+    opacity: 0 !important;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.picture-src{
+    width: 100%;
+
+}
+/*Profile Pic End*/
+
+.card_image {
+  margin-top: 190px;
+}
+
+.add_post {
+  margin-top: calc((100vh - 640px) / 2);
+}
+
+.post_image{
+  background-position: top;
+  height: 800px;
+  display : block;
+}
+
+.post_display_image{
+  background-position: top;
+  height: 450px;
+  display : block;
+}
+
+.title{
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+/*--------------------------------*/
+
+@import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+}
+
+.header {
+  min-height: 40vh;
+  background: #009FFF;
+background: linear-gradient(to right, #ec2F4B, #009FFF);
+  color: white;
+  clip-path: ellipse(100vw 60vh at 50% 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details {
+  text-align: center;
+}
+
+.profile-pic-display {
+  margin-top: 20px;
+  height: 6rem;
+  width: 6rem;
+  object-fit: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.heading {
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 1rem 0;
+}
+
+/*--------------------------------*/
 
 
 @media (min-width: 0) {
@@ -1102,4 +1166,8 @@ a{
 .followed_button{
   margin-top: 8px;
   margin-bottom: 8px;
+}
+
+.users_results{
+  margin-top: 100px;
 }
