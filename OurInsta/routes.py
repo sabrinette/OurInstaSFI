@@ -59,12 +59,12 @@ def dashbord():
     nb_posts = db.session.query(Post).count()
     Total_post_size = 0
     for post in posts:
-        stats = os.stat('static/post_images/' + post.post_image)
+        stats = os.stat('OurInsta/static/post_images/' + post.post_image)
         Total_post_size = Total_post_size + stats.st_size
     nb_user_posts = current_user.posts.count()
     usr_post_size = 0
     for post in current_user.posts:
-        stats = os.stat('static/post_images/' + post.post_image)
+        stats = os.stat('OurInsta/static/post_images/' + post.post_image)
         usr_post_size = usr_post_size + stats.st_size
         return render_template("dashbord.html", Total_post_size=Total_post_size, nb_posts=nb_posts, usr_post_size=usr_post_size,nb_user_posts=nb_user_posts)
 
